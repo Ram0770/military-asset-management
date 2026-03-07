@@ -44,8 +44,26 @@ INDEX_LOCK = threading.Lock()
 INDEX_STATUS = {"ready": False, "error": None}
 
 
+class AppError(Exception):
+    def __init__(self, public_message: str, code: str, status: int, log_message: Optional[str] = None):
+        super().__init__(public_message)
+        self.public_message = public_message
+        self.code = code
+        self.status = status
+        self.log_message = log_message or public_message
+
+
 def error_response(message: str, code: str, status: int):
     return jsonify({"error": {"code": code, "message": message}}), status
+
+
+def redact_sensitive_text(text: str) -> str:
+    if not text:
+        return text
+
+    text = re.sub(r"AIza[0-9A-Za-z\-_]{20,}", "[REDACTED_API_KEY]", text)
+    text = re.sub(r"sk-[A-Za-z0-9\-_]{20,}", "[REDACTED_API_KEY]", text)
+    return text
 
 
 @app.errorhandler(400)
@@ -163,7 +181,12 @@ def chunk_documents(docs: List[Dict[str, str]]) -> List[Dict[str, str]]:
 
 def get_openai_client() -> OpenAI:
     if not OPENAI_API_KEY:
-        raise RuntimeError("OPENAI_API_KEY is missing. Set it in your .env file.")
+        raise AppError(
+            "Server configuration is incomplete. Missing API credentials.",
+            "server_config_error",
+            500,
+            "OPENAI_API_KEY is missing. Set it in the environment.",
+        )
     if OPENAI_BASE_URL:
         return OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL, timeout=20.0)
     return OpenAI(api_key=OPENAI_API_KEY, timeout=20.0)
@@ -177,23 +200,57 @@ def generate_embedding(text: str) -> List[float]:
         client = get_openai_client()
         resp = client.embeddings.create(model=EMBEDDING_MODEL, input=text.strip())
         return resp.data[0].embedding
+    except AppError:
+        raise
     except AuthenticationError as e:
-        raise RuntimeError("Invalid OpenAI API key.") from e
+        raise AppError(
+            "Embedding provider authentication failed.",
+            "auth_error",
+            401,
+            redact_sensitive_text(str(e)),
+        ) from e
     except APITimeoutError as e:
-        raise RuntimeError("Embeddings API request timed out.") from e
+        raise AppError(
+            "Embedding request timed out. Please retry.",
+            "timeout",
+            504,
+            redact_sensitive_text(str(e)),
+        ) from e
     except RateLimitError as e:
-        raise RuntimeError("Embeddings API rate limit hit.") from e
+        raise AppError(
+            "Embedding provider rate limit reached. Please retry shortly.",
+            "rate_limited",
+            429,
+            redact_sensitive_text(str(e)),
+        ) from e
     except BadRequestError as e:
-        raise RuntimeError(f"Bad embeddings request: {e}") from e
+        raise AppError(
+            "Embedding request was rejected by the provider.",
+            "provider_rejected",
+            502,
+            redact_sensitive_text(str(e)),
+        ) from e
     except APIConnectionError as e:
-        raise RuntimeError("Network/API connection error while generating embedding.") from e
+        raise AppError(
+            "Unable to reach the embedding provider.",
+            "provider_connection_error",
+            502,
+            redact_sensitive_text(str(e)),
+        ) from e
     except APIStatusError as e:
-        raise RuntimeError(f"Embeddings API status error: {e.status_code}") from e
+        raise AppError(
+            "Embedding provider returned an error.",
+            "provider_error",
+            502,
+            f"Embeddings API status error: {e.status_code}",
+        ) from e
     except Exception as e:
-        message = str(e)
-        if "OPENAI_API_KEY is missing" in message:
-            raise RuntimeError("OPENAI_API_KEY is missing. Set it in your .env file.") from e
-        raise RuntimeError(f"Unexpected embedding error: {e}") from e
+        raise AppError(
+            "Unexpected embedding failure.",
+            "embedding_error",
+            500,
+            redact_sensitive_text(str(e)),
+        ) from e
 
 
 def build_vector_store(chunks: List[Dict[str, str]]) -> List[Dict]:
@@ -230,8 +287,8 @@ def ensure_vector_store() -> None:
             INDEX_STATUS["ready"] = True
             app.logger.info("Vector store ready with %s vectors", len(VECTOR_STORE))
         except Exception as exc:
-            INDEX_STATUS["error"] = str(exc)
-            app.logger.exception("Vector store initialization failed")
+            INDEX_STATUS["error"] = "initialization_failed"
+            app.logger.exception("Vector store initialization failed: %s", redact_sensitive_text(str(exc)))
             raise
 
 
@@ -351,20 +408,57 @@ def get_llm_response(context: str, history: str, question: str) -> Tuple[str, Op
         tokens_used = resp.usage.total_tokens if resp.usage else None
         return answer, tokens_used
 
+    except AppError:
+        raise
     except AuthenticationError as e:
-        raise RuntimeError("Invalid OpenAI API key for LLM.") from e
+        raise AppError(
+            "Chat provider authentication failed.",
+            "auth_error",
+            401,
+            redact_sensitive_text(str(e)),
+        ) from e
     except APITimeoutError as e:
-        raise RuntimeError("LLM request timed out.") from e
+        raise AppError(
+            "Chat request timed out. Please retry.",
+            "timeout",
+            504,
+            redact_sensitive_text(str(e)),
+        ) from e
     except RateLimitError as e:
-        raise RuntimeError("LLM rate limit hit. Please retry.") from e
+        raise AppError(
+            "Chat provider rate limit reached. Please retry shortly.",
+            "rate_limited",
+            429,
+            redact_sensitive_text(str(e)),
+        ) from e
     except BadRequestError as e:
-        raise RuntimeError(f"Bad LLM request: {e}") from e
+        raise AppError(
+            "Chat request was rejected by the provider.",
+            "provider_rejected",
+            502,
+            redact_sensitive_text(str(e)),
+        ) from e
     except APIConnectionError as e:
-        raise RuntimeError("Network/API connection error while calling LLM.") from e
+        raise AppError(
+            "Unable to reach the chat provider.",
+            "provider_connection_error",
+            502,
+            redact_sensitive_text(str(e)),
+        ) from e
     except APIStatusError as e:
-        raise RuntimeError(f"LLM API status error: {e.status_code}") from e
+        raise AppError(
+            "Chat provider returned an error.",
+            "provider_error",
+            502,
+            f"LLM API status error: {e.status_code}",
+        ) from e
     except Exception as e:
-        raise RuntimeError(f"Unexpected LLM error: {e}") from e
+        raise AppError(
+            "Unexpected chat failure.",
+            "chat_error",
+            500,
+            redact_sensitive_text(str(e)),
+        ) from e
 
 
 DOCUMENTS = load_documents(DOCS_FILE)
@@ -434,8 +528,9 @@ def debug_ask():
                 "retrievedChunks": len(similar),
             }
         )
-    except RuntimeError as e:
-        return error_response(str(e), "upstream_error", 502)
+    except AppError as e:
+        app.logger.warning("Safe API error in /debug/ask: %s", e.log_message)
+        return error_response(e.public_message, e.code, e.status)
     except Exception:
         app.logger.exception("Unhandled error in /debug/ask")
         return error_response("Internal server error.", "internal_server_error", 500)
@@ -507,15 +602,9 @@ def api_chat():
 
     except ValueError as e:
         return error_response(str(e), "validation_error", 400)
-    except RuntimeError as e:
-        message_lower = str(e).lower()
-        if "rate limit" in message_lower:
-            return error_response(str(e), "rate_limited", 429)
-        if "api key" in message_lower:
-            return error_response(str(e), "auth_error", 401)
-        if "timed out" in message_lower:
-            return error_response(str(e), "timeout", 504)
-        return error_response(str(e), "upstream_error", 502)
+    except AppError as e:
+        app.logger.warning("Safe API error in /api/chat: %s", e.log_message)
+        return error_response(e.public_message, e.code, e.status)
     except Exception:
         app.logger.exception("Unhandled error in /api/chat")
         return error_response("Internal server error.", "internal_server_error", 500)
