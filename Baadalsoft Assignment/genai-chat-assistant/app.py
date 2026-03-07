@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import re
+import threading
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
@@ -39,6 +40,8 @@ MAX_HISTORY_PAIRS = 5
 # In-memory vector store
 VECTOR_STORE: List[Dict] = []
 SESSION_MEMORY: Dict[str, List[Dict[str, str]]] = {}
+INDEX_LOCK = threading.Lock()
+INDEX_STATUS = {"ready": False, "error": None}
 
 
 def error_response(message: str, code: str, status: int):
@@ -210,6 +213,28 @@ def build_vector_store(chunks: List[Dict[str, str]]) -> List[Dict]:
     return store
 
 
+def ensure_vector_store() -> None:
+    """Build the in-memory index on first use so the web server can boot immediately."""
+    if INDEX_STATUS["ready"]:
+        return
+
+    with INDEX_LOCK:
+        if INDEX_STATUS["ready"]:
+            return
+
+        INDEX_STATUS["error"] = None
+        try:
+            app.logger.info("Building vector store with %s chunks", len(CHUNKS))
+            VECTOR_STORE.clear()
+            VECTOR_STORE.extend(build_vector_store(CHUNKS))
+            INDEX_STATUS["ready"] = True
+            app.logger.info("Vector store ready with %s vectors", len(VECTOR_STORE))
+        except Exception as exc:
+            INDEX_STATUS["error"] = str(exc)
+            app.logger.exception("Vector store initialization failed")
+            raise
+
+
 def find_similar_chunks(
     query_embedding: List[float],
     top_k: int = TOP_K,
@@ -342,7 +367,6 @@ def get_llm_response(context: str, history: str, question: str) -> Tuple[str, Op
         raise RuntimeError(f"Unexpected LLM error: {e}") from e
 
 
-# Startup pipeline
 DOCUMENTS = load_documents(DOCS_FILE)
 CHUNKS = chunk_documents(DOCUMENTS)
 
@@ -350,9 +374,6 @@ print(f"[Startup] Loaded {len(DOCUMENTS)} documents.")
 print(f"[Startup] Created {len(CHUNKS)} chunks for retrieval.")
 print(f"[Startup] Embedding model set to: {EMBEDDING_MODEL}")
 print(f"[Startup] LLM model set to: {LLM_MODEL}")
-
-VECTOR_STORE = build_vector_store(CHUNKS)
-print(f"[Startup] Vector store ready with {len(VECTOR_STORE)} vectors.")
 print(f"[Startup] Similarity threshold set to {SIMILARITY_THRESHOLD}")
 
 
@@ -364,6 +385,8 @@ def health():
             "documentsLoaded": len(DOCUMENTS),
             "chunksCreated": len(CHUNKS),
             "vectorsIndexed": len(VECTOR_STORE),
+            "vectorStoreReady": INDEX_STATUS["ready"],
+            "vectorStoreError": INDEX_STATUS["error"],
             "embeddingModel": EMBEDDING_MODEL,
             "llmModel": LLM_MODEL,
             "llmTemperature": LLM_TEMPERATURE,
@@ -385,6 +408,7 @@ def debug_ask():
         return error_response("Query is required.", "validation_error", 400)
 
     try:
+        ensure_vector_store()
         query_embedding = generate_embedding(query)
         similar = find_similar_chunks(query_embedding)
 
@@ -440,6 +464,7 @@ def api_chat():
         return error_response("message is required.", "validation_error", 400)
 
     try:
+        ensure_vector_store()
         session_history = SESSION_MEMORY.get(session_id, [])
         session_history = trim_history(session_history, MAX_HISTORY_PAIRS)
 
@@ -497,4 +522,5 @@ def api_chat():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.getenv("PORT", "5000"))
+    app.run(host="0.0.0.0", port=port, debug=False)
