@@ -2,8 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import sqlite3 from "sqlite3";
 
-const dataDirectory = path.resolve("backend", "data");
-const databasePath = path.join(dataDirectory, "military-assets.db");
+const configuredDatabasePath = process.env.SQLITE_DB_PATH?.trim();
+const databasePath = configuredDatabasePath
+  ? path.resolve(configuredDatabasePath)
+  : path.resolve("backend", "data", "military-assets.db");
+const dataDirectory = path.dirname(databasePath);
 
 if (!fs.existsSync(dataDirectory)) {
   fs.mkdirSync(dataDirectory, { recursive: true });
@@ -11,6 +14,8 @@ if (!fs.existsSync(dataDirectory)) {
 
 const sqlite = sqlite3.verbose();
 const db = new sqlite.Database(databasePath);
+
+export { databasePath };
 
 export function run(sql, params = []) {
   return new Promise((resolve, reject) => {
@@ -55,6 +60,10 @@ export function all(sql, params = []) {
 }
 
 export async function initializeDatabase() {
+  await run("PRAGMA foreign_keys = ON");
+  await run("PRAGMA busy_timeout = 5000");
+  await run("PRAGMA journal_mode = WAL");
+
   await run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -173,6 +182,12 @@ async function seedAssets() {
 }
 
 export async function seedDatabase() {
+  const shouldSeed = (process.env.SEED_DEMO_DATA ?? "true").toLowerCase() === "true";
+
+  if (!shouldSeed) {
+    return;
+  }
+
   await seedUsers();
   await seedAssets();
 }

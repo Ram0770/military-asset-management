@@ -1,6 +1,6 @@
 import cors from "cors";
 import express from "express";
-import { all, initializeDatabase, seedDatabase } from "./database.js";
+import { all, databasePath, initializeDatabase, seedDatabase } from "./database.js";
 import { authenticate, authorize } from "./middleware/auth.js";
 import assetsRouter from "./routes/assets.js";
 import assignmentsRouter from "./routes/assignments.js";
@@ -53,6 +53,7 @@ async function startServer() {
 
   app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
+    console.log(`SQLite database: ${databasePath}`);
   });
 }
 

@@ -86,6 +86,8 @@ npm run dev:frontend
 
 ## Notes
 
-- The SQLite database is created automatically at `backend/data/military-assets.db` on first backend start.
+- The SQLite database path is configurable with `SQLITE_DB_PATH`. By default it uses `backend/data/military-assets.db`.
+- For deployment on a persistent disk, set `SQLITE_DB_PATH` to a mounted path such as `/var/data/military-assets.db`.
 - Seed data includes sample users and sample assets for three bases.
+- Set `SEED_DEMO_DATA=false` in production if you do not want demo records inserted automatically.
 - For deployment, set the frontend API base URL and CORS origin to match your hosted services.
