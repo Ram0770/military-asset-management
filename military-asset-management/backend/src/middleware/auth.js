@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { get } from "../database.js";
 
-const SECRET = "military-asset-management-secret";
+const SECRET = process.env.JWT_SECRET || "military-asset-management-secret";
 
 export function createToken(user) {
   return jwt.sign(

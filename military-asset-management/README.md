@@ -66,6 +66,24 @@ npm run dev:frontend
 
 4. Open `http://localhost:5173`
 
+## Environment Variables
+
+Backend `.env` values:
+
+```env
+PORT=5000
+CLIENT_URL=http://localhost:5173
+JWT_SECRET=replace-with-a-secure-secret
+SQLITE_DB_PATH=backend/data/military-assets.db
+SEED_DEMO_DATA=true
+```
+
+Frontend `.env` values:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
 ## API Endpoints
 
 - `POST /api/auth/login` - authenticate a user
@@ -91,3 +109,53 @@ npm run dev:frontend
 - Seed data includes sample users and sample assets for three bases.
 - Set `SEED_DEMO_DATA=false` in production if you do not want demo records inserted automatically.
 - For deployment, set the frontend API base URL and CORS origin to match your hosted services.
+
+## Deployment
+
+### Backend on Render
+
+- Root directory: `backend`
+- Build command:
+
+```bash
+npm install
+```
+
+- Start command:
+
+```bash
+npm start
+```
+
+- Environment variables:
+
+```env
+PORT=5000
+CLIENT_URL=https://your-frontend-url.vercel.app
+JWT_SECRET=replace-with-a-secure-secret
+SQLITE_DB_PATH=/var/data/military-assets.db
+SEED_DEMO_DATA=false
+```
+
+- Add a persistent disk and mount it to `/var/data`
+
+### Frontend on Vercel
+
+- Root directory: `frontend`
+- Build command:
+
+```bash
+npm run build
+```
+
+- Output directory:
+
+```text
+dist
+```
+
+- Environment variable:
+
+```env
+VITE_API_URL=https://your-render-backend-url.onrender.com/api
+```

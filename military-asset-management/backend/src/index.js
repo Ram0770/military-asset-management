@@ -9,7 +9,11 @@ import purchasesRouter from "./routes/purchases.js";
 import transfersRouter from "./routes/transfers.js";
 
 const app = express();
-const port = 5000;
+const port = Number(process.env.PORT) || 5000;
+const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 const asyncHandler =
   (handler) =>
   (request, response, next) =>
@@ -17,7 +21,14 @@ const asyncHandler =
 
 app.use(
   cors({
-    origin: "http://localhost:5173"
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("CORS origin not allowed."));
+    }
   })
 );
 app.use(express.json());
@@ -52,7 +63,8 @@ async function startServer() {
   await seedDatabase();
 
   app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on port ${port}`);
+    console.log(`Allowed origins: ${allowedOrigins.join(", ")}`);
     console.log(`SQLite database: ${databasePath}`);
   });
 }

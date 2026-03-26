@@ -1,11 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import sqlite3 from "sqlite3";
 
+const currentFilePath = fileURLToPath(import.meta.url);
+const currentDirectory = path.dirname(currentFilePath);
+const backendDirectory = path.resolve(currentDirectory, "..");
 const configuredDatabasePath = process.env.SQLITE_DB_PATH?.trim();
 const databasePath = configuredDatabasePath
   ? path.resolve(configuredDatabasePath)
-  : path.resolve("backend", "data", "military-assets.db");
+  : path.join(backendDirectory, "data", "military-assets.db");
 const dataDirectory = path.dirname(databasePath);
 
 if (!fs.existsSync(dataDirectory)) {
