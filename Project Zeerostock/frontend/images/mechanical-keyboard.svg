@@ -1,0 +1,27 @@
+<svg width="640" height="480" viewBox="0 0 640 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="480" rx="36" fill="#0E1D31"/>
+  <rect x="62" y="58" width="516" height="364" rx="28" fill="url(#bg)"/>
+  <rect x="144" y="160" width="352" height="160" rx="24" fill="#D6E4FF"/>
+  <g fill="#6B91FF">
+    <rect x="170" y="186" width="38" height="28" rx="8"/>
+    <rect x="220" y="186" width="38" height="28" rx="8"/>
+    <rect x="270" y="186" width="38" height="28" rx="8"/>
+    <rect x="320" y="186" width="38" height="28" rx="8"/>
+    <rect x="370" y="186" width="38" height="28" rx="8"/>
+    <rect x="420" y="186" width="50" height="28" rx="8"/>
+    <rect x="170" y="226" width="48" height="28" rx="8"/>
+    <rect x="230" y="226" width="38" height="28" rx="8"/>
+    <rect x="280" y="226" width="38" height="28" rx="8"/>
+    <rect x="330" y="226" width="38" height="28" rx="8"/>
+    <rect x="380" y="226" width="90" height="28" rx="8"/>
+    <rect x="170" y="266" width="80" height="28" rx="8"/>
+    <rect x="262" y="266" width="170" height="28" rx="8"/>
+  </g>
+  <text x="62" y="96" fill="#EFF5FF" font-size="30" font-family="Arial, sans-serif" font-weight="700">Mechanical Keyboard</text>
+  <defs>
+    <linearGradient id="bg" x1="62" y1="58" x2="578" y2="422" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1A2238"/>
+      <stop offset="1" stop-color="#122C46"/>
+    </linearGradient>
+  </defs>
+</svg>

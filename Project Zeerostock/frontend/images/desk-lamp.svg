@@ -1,0 +1,16 @@
+<svg width="640" height="480" viewBox="0 0 640 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="480" rx="36" fill="#0E1D31"/>
+  <rect x="62" y="58" width="516" height="364" rx="28" fill="url(#bg)"/>
+  <path d="M268 170C268 140.176 292.176 116 322 116H384L348 186H268V170Z" fill="#FFC76B"/>
+  <path d="M318 186L272 266" stroke="#D6E4FF" stroke-width="18" stroke-linecap="round"/>
+  <path d="M272 266L342 334" stroke="#D6E4FF" stroke-width="18" stroke-linecap="round"/>
+  <path d="M228 354H408" stroke="#D6E4FF" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="348" cy="186" r="18" fill="#66E2C2"/>
+  <text x="62" y="96" fill="#EFF5FF" font-size="34" font-family="Arial, sans-serif" font-weight="700">Desk Lamp</text>
+  <defs>
+    <linearGradient id="bg" x1="62" y1="58" x2="578" y2="422" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1A2238"/>
+      <stop offset="1" stop-color="#132B47"/>
+    </linearGradient>
+  </defs>
+</svg>

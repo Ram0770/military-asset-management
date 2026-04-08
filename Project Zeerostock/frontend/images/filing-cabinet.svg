@@ -1,0 +1,17 @@
+<svg width="640" height="480" viewBox="0 0 640 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="480" rx="36" fill="#0E1D31"/>
+  <rect x="62" y="58" width="516" height="364" rx="28" fill="url(#bg)"/>
+  <rect x="224" y="114" width="192" height="252" rx="20" fill="#D6E4FF"/>
+  <path d="M224 196H416" stroke="#6B91FF" stroke-width="10"/>
+  <path d="M224 278H416" stroke="#6B91FF" stroke-width="10"/>
+  <rect x="292" y="152" width="56" height="14" rx="7" fill="#0E1D31"/>
+  <rect x="292" y="234" width="56" height="14" rx="7" fill="#0E1D31"/>
+  <rect x="292" y="316" width="56" height="14" rx="7" fill="#0E1D31"/>
+  <text x="62" y="96" fill="#EFF5FF" font-size="34" font-family="Arial, sans-serif" font-weight="700">Filing Cabinet</text>
+  <defs>
+    <linearGradient id="bg" x1="62" y1="58" x2="578" y2="422" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#152844"/>
+      <stop offset="1" stop-color="#1F243A"/>
+    </linearGradient>
+  </defs>
+</svg>

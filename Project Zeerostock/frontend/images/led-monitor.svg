@@ -1,0 +1,19 @@
+<svg width="640" height="480" viewBox="0 0 640 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="480" rx="36" fill="#0E1D31"/>
+  <rect x="62" y="58" width="516" height="364" rx="28" fill="url(#bg)"/>
+  <rect x="150" y="122" width="340" height="204" rx="20" fill="#07111F" stroke="#D6E4FF" stroke-width="12"/>
+  <rect x="174" y="146" width="292" height="156" rx="12" fill="url(#screen)"/>
+  <rect x="290" y="326" width="60" height="36" rx="14" fill="#D6E4FF"/>
+  <path d="M248 380H392" stroke="#D6E4FF" stroke-width="18" stroke-linecap="round"/>
+  <text x="62" y="96" fill="#EFF5FF" font-size="34" font-family="Arial, sans-serif" font-weight="700">LED Monitor</text>
+  <defs>
+    <linearGradient id="bg" x1="62" y1="58" x2="578" y2="422" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#131F39"/>
+      <stop offset="1" stop-color="#0F2E4A"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="174" y1="146" x2="466" y2="302" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#66E2C2"/>
+      <stop offset="1" stop-color="#6B91FF"/>
+    </linearGradient>
+  </defs>
+</svg>

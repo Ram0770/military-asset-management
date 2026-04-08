@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "productName": "Office Chair",
+    "category": "Furniture",
+    "price": 120,
+    "supplier": "ABC Traders",
+    "image": "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/office-chair.svg"
+  },
+  {
+    "id": 2,
+    "productName": "Standing Desk",
+    "category": "Furniture",
+    "price": 320,
+    "supplier": "Workspace Hub",
+    "image": "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/standing-desk.svg"
+  },
+  {
+    "id": 3,
+    "productName": "Wireless Mouse",
+    "category": "Electronics",
+    "price": 35,
+    "supplier": "TechBridge",
+    "image": "https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/wireless-mouse.svg"
+  },
+  {
+    "id": 4,
+    "productName": "Mechanical Keyboard",
+    "category": "Electronics",
+    "price": 89,
+    "supplier": "KeyWorks",
+    "image": "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/mechanical-keyboard.svg"
+  },
+  {
+    "id": 5,
+    "productName": "LED Monitor",
+    "category": "Electronics",
+    "price": 210,
+    "supplier": "Vision Point",
+    "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/led-monitor.svg"
+  },
+  {
+    "id": 6,
+    "productName": "Whiteboard Markers",
+    "category": "Stationery",
+    "price": 15,
+    "supplier": "PaperNest",
+    "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/whiteboard-markers.svg"
+  },
+  {
+    "id": 7,
+    "productName": "Notebook Set",
+    "category": "Stationery",
+    "price": 18,
+    "supplier": "PaperNest",
+    "image": "https://images.unsplash.com/photo-1531346680769-a1d79b57de5c?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/notebook-set.svg"
+  },
+  {
+    "id": 8,
+    "productName": "Filing Cabinet",
+    "category": "Furniture",
+    "price": 260,
+    "supplier": "Storage Masters",
+    "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/filing-cabinet.svg"
+  },
+  {
+    "id": 9,
+    "productName": "Desk Lamp",
+    "category": "Lighting",
+    "price": 42,
+    "supplier": "Bright Supply",
+    "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/desk-lamp.svg"
+  },
+  {
+    "id": 10,
+    "productName": "Conference Table",
+    "category": "Furniture",
+    "price": 540,
+    "supplier": "Workspace Hub",
+    "image": "https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/conference-table.svg"
+  },
+  {
+    "id": 11,
+    "productName": "Printer Paper Ream",
+    "category": "Stationery",
+    "price": 11,
+    "supplier": "Office Stack",
+    "image": "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/printer-paper-ream.svg"
+  },
+  {
+    "id": 12,
+    "productName": "USB-C Dock",
+    "category": "Electronics",
+    "price": 145,
+    "supplier": "TechBridge",
+    "image": "https://images.unsplash.com/photo-1625842268584-8f3296236761?auto=format&fit=crop&w=1200&q=80",
+    "fallbackImage": "/images/usb-c-dock.svg"
+  }
+]
